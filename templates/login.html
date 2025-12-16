@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | CryptoNest</title>
+  <meta name="description" content="Login to CryptoNest - Track your crypto portfolio">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="simple-auth">
+  <!-- Navbar -->
+  <header class="navbar" id="auth-navbar">
+    <div class="container nav-flex">
+      <div class="logo">
+        <i class="fa-solid fa-coins"></i>
+        <span>CryptoNest</span>
+      </div>
+      <!-- Currency Selector -->
+<div class="currency-selector">
+  <select id="currency-select" onchange="changeCurrency(this.value)">
+    <option value="USD" {{ 'selected' if currency == 'USD' }}>USD</option>
+    <option value="EUR" {{ 'selected' if currency == 'EUR' }}>EUR</option>
+    <option value="GBP" {{ 'selected' if currency == 'GBP' }}>GBP</option>
+    <option value="INR" {{ 'selected' if currency == 'INR' }}>INR</option>
+    <option value="JPY" {{ 'selected' if currency == 'JPY' }}>JPY</option>
+  </select>
+</div>
+
+      <nav>
+        <a href="/">Home</a>
+        <a href="{{ url_for('signup') }}">Sign Up</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Login Form -->
+  <main class="auth-main">
+    <div class="container">
+      <div class="auth-card simple-login" id="login-container">
+        <h1>Login</h1>
+        <p>Access your crypto portfolio</p>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- Form -->
+        <form method="POST" class="simple-form" id="login-form">
+          <div class="form-group">
+            <label><i class="fa-solid fa-envelope"></i> Email</label>
+            <input type="email" name="email" id="login-email" placeholder="your@email.com" required>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-solid fa-lock"></i> Password</label>
+            <div class="password-wrapper">
+              <input type="password" name="password" id="login-password" placeholder="Enter password" required>
+              <button type="button" class="toggle-password" id="login-password-toggle">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+            <a href="{{ url_for('forgot_password') }}" class="forgot-password">Forgot Password?</a>
+          </div>
+
+          <button type="submit" class="btn-primary full-width">Login</button>
+        </form>
+
+        <div class="auth-footer">
+          Don't have an account? <a href="{{ url_for('signup') }}">Sign up free</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="simple-footer">
+    <div class="container">
+      <p>© 2025 CryptoNest | All rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</body>
+</html>

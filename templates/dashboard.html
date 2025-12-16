@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | CryptoNest</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body data-currency-symbol="{{ currency_symbol }}">
+
+  <!-- Navbar -->
+  <header class="navbar" id="dashboard-navbar">
+    <div class="container nav-flex">
+      <div class="logo">
+        <i class="fa-solid fa-coins"></i>
+        <span>CryptoNest</span>
+      </div>
+      
+      <!-- Currency Selector -->
+      <div class="currency-selector">
+        <select id="currency-select" onchange="changeCurrency(this.value)">
+          <option value="USD" {{ 'selected' if currency == 'USD' }}>USD</option>
+          <option value="EUR" {{ 'selected' if currency == 'EUR' }}>EUR</option>
+          <option value="GBP" {{ 'selected' if currency == 'GBP' }}>GBP</option>
+          <option value="INR" {{ 'selected' if currency == 'INR' }}>INR</option>
+          <option value="JPY" {{ 'selected' if currency == 'JPY' }}>JPY</option>
+          <option value="CAD" {{ 'selected' if currency == 'CAD' }}>CAD</option>
+          <option value="AUD" {{ 'selected' if currency == 'AUD' }}>AUD</option>
+        </select>
+      </div>
+
+      <div class="nav-right">
+        <span class="user-greeting">Hello, {{ current_user.name or 'User' }}</span>
+        <a href="{{ url_for('logout') }}" class="btn-outline" id="logout-btn">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Add Coin Form -->
+    <div class="card add-coin-card" id="add-coin-card">
+      <h2 class="card-title">Add Coin to Portfolio</h2>
+      <form method="POST" action="{{ url_for('add_coin') }}" class="simple-form" id="add-coin-form" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-coins"></i> Coin Symbol</label>
+            <input type="text" 
+                   name="symbol" 
+                   id="coin-symbol" 
+                   class="form-input" 
+                   placeholder="BTC, ETH, SOL" 
+                   maxlength="10"
+                   pattern="[A-Z]{2,10}"
+                   required>
+            <small class="form-help">Enter symbol like BTC, ETH, SOL</small>
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-dollar-sign"></i> Buy Price (USD)</label>
+            <input type="number" 
+                   step="0.00000001" 
+                   name="buy_price" 
+                   id="buy-price" 
+                   class="form-input" 
+                   placeholder="45000.00" 
+                   min="0.00000001"
+                   required>
+            <small class="form-help">Price when you bought (always USD)</small>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-hashtag"></i> Quantity</label>
+            <input type="number" 
+                   step="0.00000001" 
+                   name="quantity" 
+                   id="coin-quantity" 
+                   class="form-input" 
+                   placeholder="0.01" 
+                   min="0.00000001"
+                   required>
+            <small class="form-help">Amount you own</small>
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-calendar"></i> Buy Date</label>
+            <input type="date"
+                   name="buy_date"
+                   id="buy-date"
+                   class="form-input"
+                   max="{{ '2025-12-16' if today else '' }}"
+                   required>
+            <small class="form-help">When you bought it</small>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary btn-full" id="add-coin-btn">
+          <i class="fa-solid fa-plus"></i> Add Coin
+        </button>
+      </form>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} mb-3">
+            <i class="fa-solid fa-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }}"></i>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Portfolio Table -->
+    <div class="card portfolio-card" id="portfolio-card">
+      <div class="page-header">
+        <div class="header-flex">
+          <h2 class="card-title">My Portfolio ({{ portfolio|length }} coins)</h2>
+          <div class="header-actions">
+            <a href="{{ url_for('export_csv') }}" class="btn-outline" id="export-csv">
+              <i class="fa-solid fa-download"></i> CSV
+            </a>
+            <a href="{{ url_for('export_pdf') }}" class="btn-primary" id="export-pdf">
+              <i class="fa-solid fa-file-pdf"></i> PDF
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {% if portfolio %}
+        <div class="table-responsive">
+          <table class="portfolio-table" id="portfolio-table">
+            <thead>
+              <tr>
+                <th class="table-th">Coin</th>
+                <th class="table-th">Symbol</th>
+                <th class="table-th">Qty</th>
+                <th class="table-th">Buy Price</th>
+                <th class="table-th">Current Price</th>
+                <th class="table-th">Value</th>
+                <th class="table-th">24h P&L</th>
+                <th class="table-th action-th">Action</th>
+              </tr>
+            </thead>
+            <tbody id="portfolio-tbody">
+              {% for coin in portfolio %}
+              <tr class="portfolio-row" data-coin-id="{{ coin.id }}">
+                <td class="coin-cell">
+                  <img src="https://cryptologos.cc/logos/{{ coin.symbol|lower }}-logo.png?v=033" 
+                       class="coin-logo"
+                       onerror="this.src='https://via.placeholder.com/28x28/22c55e/ffffff?text={{ coin.symbol }}'"
+                       alt="{{ coin.symbol }}">
+                  <span class="coin-name">{{ coin.name }}</span>
+                </td>
+                <td class="symbol-cell">{{ coin.symbol }}</td>
+                <td class="number-cell">{{ "%.6f"|format(coin.quantity) }}</td>
+                <!-- ✅ FIXED: Clean number formatting -->
+                <td class="price-cell">{{ currency_symbol }}{{ "%.4f"|format(coin.buy_price)|replace(',','') }}</td>
+                <td class="price-cell">{{ currency_symbol }}{{ "%.4f"|format(coin.current_price)|replace(',','') }}</td>
+                <td class="value-cell">{{ currency_symbol }}{{ "%.2f"|format(coin.current_value)|replace(',','') }}</td>
+                <td class="pnl-cell {{ 'positive' if coin.pnl_24h >= 0 else 'negative' }}">
+                  {{ "%.2f"|format(coin.pnl_24h) }}%
+                </td>
+                <td class="action-cell">
+                  <form method="POST" action="{{ url_for('delete_coin', coin_id=coin.id) }}" class="delete-form">
+                    <button type="submit" class="btn-danger btn-sm">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr class="table-total">
+                <td colspan="5" class="total-label">TOTAL</td>
+                <td class="total-value">{{ currency_symbol }}{{ "%.2f"|format(total_value)|replace(',','') }}</td>
+                <td class="total-pnl {{ 'positive' if total_pnl >= 0 else 'negative' }}">
+                  {{ "%.2f"|format(total_pnl) }}%
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Portfolio Chart -->
+        <div class="chart-section">
+          <h3 class="chart-title">Portfolio Allocation</h3>
+          <div class="chart-container">
+            <canvas id="portfolio-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="btn-primary btn-large" id="connect-wallet-btn">
+            <i class="fa-solid fa-wallet"></i> Connect Wallet
+          </button>
+          <button class="btn-outline btn-large" id="connect-exchange-btn">
+            <i class="fa-solid fa-exchange-alt"></i> Connect Exchange
+          </button>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <i class="fa-solid fa-wallet empty-icon"></i>
+          <h3 class="empty-title">No coins added yet</h3>
+          <p class="empty-text">Use the form above to add your first cryptocurrency</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
