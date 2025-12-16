@@ -144,45 +144,45 @@ cryptonest/
 ```bash
 git clone https://github.com/Sejal-2004/CryptoNest
 cd cryptonest
-Step 2: Install Dependencies
+### Step 2: Install Dependencies
+```bash
 pip install -r requirements.txt
-
 Step 3: Run the Application
+bash
+Copy code
 python app.py
-
 Step 4: Open in Browser
+cpp
+Copy code
 http://127.0.0.1:5000/
-
 📌 Deployment Status
-
 ❌ Not Deployed
 
 Deployment is not required as per internship guidelines.
-The project is fully functional in a local environment.
+The project is fully functional in a local development environment.
 
 📚 Learning Outcomes
+Hands-on experience with the Flask framework
 
-Hands-on experience with Flask framework
+Understanding of MVC architecture
 
-Understanding MVC structure
+Live API integration in real-world projects
 
-API integration in real projects
+Basics of authentication and security
 
-Authentication & security basics
-
-Real-world project structuring
+Professional project structuring
 
 GitHub version control practices
 
 👩‍💻 Developer Information
-
 Name: Sejal Singh
 Internship: Infosys Springboard Internship 6.0 (Batch 4)
 
-🔗 LinkedIn Profile
+📧 Email:
+sejalsingh8647@gmail.com
 
-👉 https://linkedin.com/in/sejal-singh-97669b314
+🔗 LinkedIn Profile:
+https://linkedin.com/in/sejal-singh-97669b314
 
 🙏 Acknowledgement
-
-I would like to thank Infosys Springboard for providing this internship opportunity and learning resources which helped me build this project and strengthen my practical development skills.
+I would like to thank Infosys Springboard for providing this internship opportunity and learning resources, which helped me build this project and strengthen my practical development skills.
