@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      CryptoNest | Free Crypto Portfolio Tracker - Top 50 Coins Live
+    </title>
+    <meta
+      name="description"
+      content="Track Top 50 cryptocurrencies live with profit/loss. Free simple portfolio manager. Bitcoin, Ethereum, Solana & more."
+    />
+    <meta
+      name="keywords"
+      content="crypto prices, top 50 coins, crypto portfolio, bitcoin price, free crypto tracker"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+
+  <body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+      <div class="loader">
+        <i class="fa-solid fa-coins fa-spin"></i>
+      </div>
+    </div>
+
+    <!-- Navbar -->
+    <header class="navbar" id="main-navbar">
+      <div class="container nav-flex">
+        <div class="logo">
+          <i class="fa-solid fa-coins"></i>
+          <span>CryptoNest</span>
+        </div>
+        <!-- Currency Selector -->
+<div class="currency-selector">
+  <select id="currency-select" onchange="changeCurrency(this.value)">
+    <option value="USD" {{ 'selected' if currency == 'USD' }}>USD</option>
+    <option value="EUR" {{ 'selected' if currency == 'EUR' }}>EUR</option>
+    <option value="GBP" {{ 'selected' if currency == 'GBP' }}>GBP</option>
+    <option value="INR" {{ 'selected' if currency == 'INR' }}>INR</option>
+    <option value="JPY" {{ 'selected' if currency == 'JPY' }}>JPY</option>
+  </select>
+</div>
+
+        <div class="nav-actions">
+          <a href="{{ url_for('login') }}" class="btn-outline">Login</a>
+          <a href="{{ url_for('signup') }}" class="btn-primary">Get Started</a>
+        </div>
+        <div class="mobile-toggle" id="mobile-toggle">
+          <i class="fa-solid fa-bars"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-header">
+          <h1>
+            Track Top 50 Cryptocurrencies
+            <span class="gradient-text">Live</span>
+          </h1>
+          <p>Free portfolio manager • Real-time prices • Simple & secure</p>
+          <div class="hero-buttons">
+            <a href="{{ url_for('signup') }}" class="btn-primary btn-large"
+              >Start Free</a
+            >
+            <a href="#how-to-use" class="btn-outline btn-large">How It Works</a>
+          </div>
+        </div>
+
+        <!-- Top 50 Coins Table -->
+        <div class="coins-table" id="top50-coins-table">
+          <div class="table-header">
+            <span>#</span>
+            <span>Name</span>
+            <span>Price</span>
+            <span>24h Change</span>
+            <span>Market Cap</span>
+          </div>
+          <div class="table-body" id="coins-list">
+            <div class="coin-row skeleton">
+              <span>1</span>
+              <span class="skeleton-text"></span>
+              <span class="skeleton-price"></span>
+              <span class="skeleton-change"></span>
+              <span class="skeleton-cap"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trending Coins -->
+    <section id="trending-section" class="trending section-padding">
+      <div class="container">
+        <h2 class="section-title">🔥 Trending Coins Today</h2>
+        <div class="trending-grid" id="trending-coins">
+          <!-- Data loaded by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- How To Use -->
+    <section id="how-to-use" class="how-to-use section-padding">
+      <div class="container">
+        <h2 class="section-title">Simple 3-Step Portfolio Manager</h2>
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Sign Up Free</h3>
+            <p>30 seconds. No credit card needed.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Add Your Coins</h3>
+            <p>Enter amounts. See live values instantly.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Track Profits</h3>
+            <p>Real-time P&L, charts, and alerts.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer simple-footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <div class="logo">
+              <i class="fa-solid fa-coins"></i>
+              <span>CryptoNest</span>
+            </div>
+            <p>Free crypto portfolio tracker</p>
+          </div>
+          <div class="social-links">
+            <a href="https://github.com/Sejal-2004" target="_blank">
+              <i class="fab fa-github"></i>
+            </a>
+            <a
+              href="https://linkedin.com/in/sejal-singh-97669b314"
+              target="_blank"
+            >
+              <i class="fab fa-linkedin"></i>
+            </a>
+            <a
+              href="mailto:sejalsingh8647@gmail.com?subject=Contact%20from%20CryptoNest&body=Hello%20Sejal,%0A%0AI%20would%20like%20to%20connect%20with%20you.%0A%0ARegards,"
+            >
+              <i class="fa-solid fa-envelope"></i>
+            </a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <a href="#trending-section">Top Coins</a>
+          <a href="#how-to-use">How To Use</a>
+          <a href="{{ url_for('login') }}">Login</a>
+          <a href="{{ url_for('signup') }}">Sign Up</a>
+        </div>
+        <div class="copyright">© 2025 CryptoNest | All Rights Reserved.</div>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>
